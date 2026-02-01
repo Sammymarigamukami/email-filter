@@ -1,6 +1,10 @@
 import fetch from 'node-fetch';
 import 'dotenv/config';
 
+/**
+ * Function to get a new access token using a refresh token.
+ * 
+ */
 
 
 export async function getAccessToken(refreshToken) {

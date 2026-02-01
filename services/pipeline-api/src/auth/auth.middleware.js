@@ -1,5 +1,4 @@
 
-
 export const requireSession = (req, res, next) => {
     console.log('Session Data from middleware:', req.session);
     if (!req.session?.user?.refresh_token) {

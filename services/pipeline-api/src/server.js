@@ -1,10 +1,10 @@
 import express from 'express';
 import cors from 'cors';
-import router from './routes/userSocialRoute.js';
-import emailRouter from './routes/emailAttachmentRoute.js';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import dotenv from 'dotenv';
+import router from './routes/authRoute.js';
+import buildQueueRoute from './routes/buildQueueRoute.js';
 
 dotenv.config();
 
@@ -38,9 +38,8 @@ app.use(
 );
 
 app.use('/auth', router);
-app.use('/', emailRouter);
+app.use('/internal', buildQueueRoute)
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
-

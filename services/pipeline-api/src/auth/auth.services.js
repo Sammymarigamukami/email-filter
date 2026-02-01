@@ -2,6 +2,8 @@ import crypto from 'crypto';
 import fetch from 'node-fetch';
 import 'dotenv/config';
 
+
+
 function generateState() {
     return crypto.randomBytes(20).toString('hex');
 }
@@ -34,6 +36,10 @@ export const googleOAuthCallback = async (req, res) => {
     try {
     const { code, state } = req.query;
     const savedState = req.session.google_oauth_state;
+
+    console.log('Received OAuth Callback with code:', code);
+    console.log('Received OAuth Callback with state:', state);
+    console.log('Saved state in session:', savedState);
 
     if (state !== savedState) {
         return res.status(400).send('Invalid state parameter');
@@ -96,47 +102,6 @@ export const googleOAuthCallback = async (req, res) => {
         email: email,
         refresh_token: refresh_token,
     }
-
-
-    const fetchEmails = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages?labelIds=INBOX&labelIds=CATEGORY_PERSONAL&q=has:attachment', {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${access_token}`,
-        }
-    });
-
-    console.log('Fetch Emails Response Status:', fetchEmails.status);
-
-    if (!fetchEmails.ok) {
-        return res.status(500).send('Failed to fetch user emails');
-    }
-
-    const emailsData = await fetchEmails.json();
-    console.log('Emails with Attachments:', emailsData);
-    const { id } = emailsData.messages[0];
-    console.log('First Email ID:', id);
-   //console.log('SESSION DATA:', req.session);
-    //console.log('REFRESH TOKEN:', req.session.user.refresh_token);
-
-    const fetchEmailDetails = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}?format=full`, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${access_token}`,
-        }
-    })
-
-    if (!fetchEmailDetails.ok) {
-        return res.status(500).send('Failed to fetch email details');
-    }
-    const emailDetails = await fetchEmailDetails.json();
-    console.log('email Data', emailDetails.payload.headers);
-
-
-    //console.log('Email file:', emailDetails.payload.parts[1].body.attachmentId);
-    //console.log('Encoded:', emailDetails.payload.parts[1].headers);
-
-   // const attachment = emailDetails.payload.parts[1].body.attachmentId;
-    //const { filename, mimeType } = emailDetails.payload.parts[1];
 
     return res.redirect('http://localhost:3000'); 
 

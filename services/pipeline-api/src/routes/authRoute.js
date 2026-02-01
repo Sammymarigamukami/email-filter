@@ -1,5 +1,6 @@
 import express from 'express';
-import { getGoogleOAuthState, googleOAuthCallback } from '../controllers/googleOauth.js';
+import { getGoogleOAuthState, googleOAuthCallback } from '../auth/auth.services.js';
+
 
 const router = express.Router();
 
