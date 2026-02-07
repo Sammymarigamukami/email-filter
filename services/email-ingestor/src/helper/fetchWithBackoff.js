@@ -27,6 +27,7 @@ import fetch from 'node-fetch';
  * - Deterministic in growth
  * - Bounded (via maxRetries in the caller)
  * - Independent per request
+ * 
  */
 
 function backoffDelay(attempt, baseDelay = 500, maxDelay = 10000) {  // Exponential backoff calculation
@@ -56,7 +57,7 @@ function backoffDelay(attempt, baseDelay = 500, maxDelay = 10000) {  // Exponent
  *   when many workers fail at the same time.
  *
  * Why this exists:
- * - APIs like Gmail enforce strict per-method quota limits.
+ * - Gmail APIs enforce strict per-method quota limits.
  * - When limits are exceeded, the server *expects* clients to slow down.
  * - Retrying immediately makes the problem worse and can lead to
  *   longer bans or dropped requests.
@@ -81,9 +82,11 @@ export async function fetchWithBackoff(url, options, maxRetries = 5) {
             if (res.ok) {
                 return res;
             }
+            // For non-retryable errors (not 429 or 5xx), throw immediately
             if (res.status !== 429 && res.status < 500) {
                 throw new Error(`Request failed with status ${res.status}`);
             }
+            // For 429 or 5xx, check if we have retries left
             if (attempt >= maxRetries) {
                 throw new Error(`Max retries reached. Last status: ${res.status}`);
             }
@@ -93,6 +96,11 @@ export async function fetchWithBackoff(url, options, maxRetries = 5) {
             console.warn(`Request failed with status ${res.status}. Retrying in ${Math.round(delay)} ms... (attempt ${attempt} of ${maxRetries})`);
             await new Promise(resolve => setTimeout(resolve, delay));
         } catch (error) {
+            /**
+             * Handles network errors or other exceptions during fetch.
+             * - If the error is not related to rate limiting or server issues, it is thrown immediately.
+             * - If the maximum number of retries has been reached, the error is thrown.
+             */
             if (attempt >= maxRetries) throw error;
             const delay = backoffDelay(attempt);
             attempt++;

@@ -8,6 +8,9 @@
     "express": "^5.2.1",
     "express-session": "^1.18.2",
     "ioredis": "^5.9.2",
-    "node-fetch": "^3.3.2"
+    "mammoth": "^1.11.0",
+    "node-fetch": "^3.3.2",
+    "pdf-parse": "^2.4.5",
+    "tesseract.js": "^7.0.0"
   }
 }

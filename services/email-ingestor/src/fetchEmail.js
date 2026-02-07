@@ -45,6 +45,12 @@ export async function fetchEmails(refreshToken) {
         MESSAGE_CONCURRENCY_LIMIT,
         async (message) => {
             try {
+
+            /**
+             * For each email message with attachments:
+             * - Fetch the full email details using the message ID.
+             * - Extract the email's payload, which contains the structure of the email content.
+             */
             const url = `https://www.googleapis.com/gmail/v1/users/me/messages/${message.id}?format=full`;
             const emailDetailsResponse = await fetchWithBackoff(url, {
                 method: 'GET',
