@@ -7,6 +7,7 @@ import Tesseract from "tesseract.js";
  * @param {*} attachmentId 
  * @returns 
  */
+
 export async function extractPdf(attachmentId) {
     const data = await pdfParse(attachmentId);
     return {

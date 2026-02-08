@@ -11,13 +11,14 @@ export const attachmentWorker = new Worker(
         // if (!job.data?.email || !job.data?.attachment) {
         //     throw new Error("Invalid job data: email and attachment information is required");
         // }
-        const { email, attachment } = job.opts;
+        const { email, attachment } = job.data;
 
         if (!attachment?.mimeType || !attachment?.attachmentId) {
             throw new Error("Invalid attachment data");
         }
         // Decode the base64-encoded attachmentId to get the original binary data
-        const attachmentId = Buffer.from(attachment.attachmentId, 'base64');
+        const base64 = attachment.attachmentId.replace(/-/g, '+').replace(/_/g, '/');
+        const attachmentId = Buffer.from(base64, 'base64');
 
         let text;
 
@@ -46,7 +47,7 @@ export const attachmentWorker = new Worker(
     },
     {
         connection: redisConnection,
-        concurrency: 5,
+        concurrency: 2,
     }
 )
 

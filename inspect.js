@@ -12,14 +12,14 @@ async function inspect() {
 
     const jobs = await queue.getJobs(["waiting", "delayed"]);
 
-    console.log(
-        jobs.map(job => ({
-            id: job.id,
-            name: job.name,
-            data: job.data,
-            opts: job.opts,
-        }))
-    )
+    // console.log(
+    //     jobs.map(job => ({
+    //         id: job.id,
+    //         name: job.name,
+    //         data: job.data,
+    //         opts: job.opts,
+    //     }))
+    // )
 }
 
 inspect().then(() => process.exit(0));
